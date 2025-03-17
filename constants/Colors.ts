@@ -10,6 +10,8 @@ const background = '#F8F9FA';
 const text = '#212529';
 const black = '#000000';
 const white = '#FFFFFF';
+const gray = '#dddddd';
+const iconBg = '#dbeafe';
 
 export const Colors = {
   primary,
@@ -18,5 +20,7 @@ export const Colors = {
   background,
   text,
   black,
-  white
+  white,
+  gray,
+  iconBg
 };
