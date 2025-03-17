@@ -1,5 +1,6 @@
 import bcryptjs from "bcryptjs";
 import { User } from '../models/user.model.js';
+import { sendWelcomeEmail } from "../mail/emails.js";
 
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 
@@ -33,6 +34,12 @@ export const signup = async (req, res) => {
     await user.save();
 
     const token = generateTokenAndSetCookie(res, user._id);
+
+    try {
+      await sendWelcomeEmail(email, name);
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError.message);
+    }
 
     return res.status(201).json({
       success: true,
