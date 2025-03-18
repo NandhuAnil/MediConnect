@@ -1,35 +1,50 @@
-import { StyleSheet, View, FlatList, TouchableOpacity, Text } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, View, FlatList, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import AppointementCard from '@/components/AppointementCard';
-import { Ionicons } from '@expo/vector-icons';
+import useBooking from '@/hooks/Data.services';
 
-const doctor = {
-  fullName: "Lara",
-  userEmail: "example@gmail.com",
-  id: 2020,
-  Time: "12:30 - AM"
-};
+interface Booking {
+  _id: string;
+  userName: string;
+  email: string;
+  date: string;
+  time: string;
+  doctor: string;
+  note?: string;
+}
 
-export default function consult() {
-  // const [appointementList, setAppointementList] = useState([]);
-  // setAppointementList(doctor);
+export default function Consult() {
+  const { getUserBookings } = useBooking();
+  const [appointments, setAppointments] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const data = await getUserBookings();
+        setAppointments(data); 
+      } catch (error) {
+        console.error('Failed to fetch appointments:', (error as Error).message);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
   return (
     <View style={{ padding: 20, marginTop: 20 }}>
       <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-        {/* <TouchableOpacity>
-            <Ionicons name="arrow-back-circle-outline" size={37} color="black" />
-        </TouchableOpacity> */}
-        <Text style={{ fontSize: 25, fontFamily: 'appFont-semibold' }}>My Appointements</Text>
+        <Text style={{ fontSize: 25, fontFamily: 'appFont-semibold' }}>My Appointments</Text>
       </View>
       <FlatList
-        data={[doctor]}
+        data={appointments}
+        keyExtractor={(item) => item._id.toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <AppointementCard appointement={item} />
         )}
       />
     </View>
-  )
+  );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

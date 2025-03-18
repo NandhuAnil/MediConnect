@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import moment from 'moment'
+import useBooking from '@/hooks/Data.services';
+import useUser from '@/hooks/useUser';
 
 
 const BookingSection = ({ doctorData }) => {
-
-  const [next7Days, setNext7Days] = useState([])
+  const { currentUser } = useUser();
+  const { createBooking } = useBooking();
+  const [next7Days, setNext7Days] = useState([]);
   const [selectedDate, setSelectedDate] = useState(next7Days[0]?.date);
   const [timeList, setTimeList] = useState([])
   const [selectedTime, setSelectedTime] = useState(next7Days[0]?.date);
@@ -56,35 +59,27 @@ const BookingSection = ({ doctorData }) => {
     setTimeList(timeList)
   }
 
-  // const handleBookAppointement = () => {
-
-  //   // Perform validation
-  //   if (!selectedDate || !selectedTime || !hospital.id || !notes) {
-  //     Alert.alert('Error', 'Please fill in all the required fields.');
-  //     return;
-  //   }
-
-  //   setIsSubmitting(true)
-  //   const data = {
-  //     data: {
-  //       UserName: user.fullName,
-  //       Email: user.primaryEmailAddress.emailAddress,
-  //       Date: selectedDate,
-  //       Time: selectedTime,
-  //       hospital: hospital.id,
-  //       Note: notes,
-  //     }
-  //   };
-
-  //   console.log('This Booked Appointement Data is sent to Strapi --> ', data)
-  //   globalApi.createAppointement(data)
-  //     .then(() => console.log('🟢 Booked Data sent Successfully'))
-  //     .catch(error => console.log('🔴Error while seding data to backend = ', error))
-
-
-  //   setIsSubmitting(false)
-  // }
-
+  const onSubmit = () => {
+    if (!currentUser.name || !currentUser.email || !selectedDate || !selectedTime || !doctorData?.doctorName) {
+      ToastAndroid.show('All fields are required', ToastAndroid.SHORT);
+      return;
+    }
+  
+    setIsSubmitting(true);
+  
+    createBooking(currentUser.name, currentUser.email, selectedDate, selectedTime, doctorData.doctorName, notes)
+      .then(() => {
+        ToastAndroid.show('Appointment booked successfully!', ToastAndroid.SHORT);
+        setIsSubmitting(false);
+        setNotes('');
+        setSelectedDate(next7Days[0]?.date);
+        setSelectedTime(timeList[0]?.time);
+      })
+      .catch((error) => {
+        ToastAndroid.show(`Booking failed: ${error.message}`, ToastAndroid.SHORT);
+        setIsSubmitting(false);
+      });
+  };
 
   return (
     <View>
@@ -185,7 +180,7 @@ const BookingSection = ({ doctorData }) => {
 
       {/* Make appointement Btn */}
       <TouchableOpacity
-        // onPress={handleBookAppointement}
+        onPress={onSubmit}
         disabled={isSubmitting}
         style={{ backgroundColor: Colors.primary, borderRadius: 99, padding: 13, margin: 10, left: 0, right: 0, marginBottom: 10, zIndex: 20, }}
       >

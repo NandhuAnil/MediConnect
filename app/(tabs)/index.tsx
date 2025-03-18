@@ -20,6 +20,7 @@ import {
   useSugarDoctorData,
   usePsycoDoctorData,
 } from "@/hooks/globalData.service";
+import useUser from "@/hooks/useUser";
 
 const user = {
   imageUrl: "",
@@ -87,6 +88,7 @@ const categoryList = [
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { currentUser } = useUser();
   const { bpSplDoctor } = useBPDoctorData();
   const { genralDoctorData } = useGenralDoctorData();
   const { sugarSplDoctor } = useSugarDoctorData();
@@ -132,14 +134,14 @@ export default function HomeScreen() {
             source={
               photoURL
                 ? { uri: photoURL }
-                : { uri: generateAvatarUrl(user.fullName) }
+                : { uri: generateAvatarUrl(currentUser?.name || user.fullName) }
             }
             style={{ width: 45, height: 45, borderRadius: 99 }}
           />
           <View>
             <Text style={{ fontFamily: "appFont" }}>Hello, 👋</Text>
             <Text style={{ fontSize: 18, fontFamily: "appFont-bold" }}>
-              {user.fullName}
+              {currentUser?.name}
             </Text>
           </View>
         </View>

@@ -11,6 +11,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { adjustColor } from "@/scripts/adjustColor";
 import useAuth from "@/hooks/Auth.services";
+import useUser from "@/hooks/useUser";
 
 type IconName = keyof typeof MaterialIcons.glyphMap;
 
@@ -18,31 +19,37 @@ const categoryList: {
   id: number;
   icon: IconName;
   title: string;
+  route: string;
 }[] = [
   {
     id: 0,
     icon: "perm-contact-calendar",
     title: "Appointement",
+    route: "/(tabs)/consult",
   },
   {
     id: 1,
     icon: "payment",
     title: "Payment",
+    route: "/(tabs)/consult",
   },
   {
     id: 2,
     icon: "folder-shared",
     title: "Tell Your Friend",
+    route: "/(tabs)/consult",
   },
   {
     id: 3,
     icon: "laptop-chromebook",
     title: "Promotions",
+    route: "/(tabs)/consult",
   },
   {
     id: 4,
     icon: "settings",
     title: "Settings",
+    route: "/(tabs)/consult",
   },
 ];
 
@@ -52,6 +59,7 @@ const user = {
 };
 
 export default function profile() {
+  const { currentUser } = useUser();
   const userImageUrl = "";
   const { handleLogout } = useAuth();
 
@@ -98,7 +106,7 @@ export default function profile() {
                 source={
                   userImageUrl
                     ? { uri: userImageUrl }
-                    : { uri: generateAvatarUrl(user.fullName) }
+                    : { uri: generateAvatarUrl(currentUser?.name || user.fullName) }
                 }
                 style={{
                   width: 100,
@@ -125,17 +133,9 @@ export default function profile() {
               style={{ flexDirection: "column", gap: 1, alignItems: "center" }}
             >
               <Text style={{ fontSize: 15, fontFamily: "appFont-semibold" }}>
-                {user.fullName}
+                {currentUser?.name ||  user.fullName}
               </Text>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontFamily: "appFont-semibold",
-                  color: adjustColor(Colors.gray, -50),
-                }}
-              >
-                +91 8097493474
-              </Text>
+              
               <Text
                 style={{
                   fontSize: 15,
@@ -143,7 +143,7 @@ export default function profile() {
                   color: adjustColor(Colors.gray, -50),
                 }}
               >
-                {user.userEmail}
+                {currentUser?.email || user.userEmail}
               </Text>
             </View>
           </View>
@@ -153,6 +153,7 @@ export default function profile() {
           data={categoryList}
           renderItem={({ item }) => (
             <TouchableOpacity
+              // onPress={router.push(item.route as `/(${string})`)}
               style={{
                 display: "flex",
                 flexDirection: "row",
