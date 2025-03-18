@@ -1,23 +1,75 @@
 import {
+  ActivityIndicator,
   Pressable,
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
-import Button from "@/components/Button";
 import Checkbox from "expo-checkbox";
 import { useRouter } from "expo-router";
+import useAuth from "@/hooks/Auth.services";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function login() {
   const router = useRouter();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const { handleLogin, loading } = useAuth();
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+
+  useEffect(() => {
+    const loadCredentials = async () => {
+      try {
+        const savedEmail = await AsyncStorage.getItem('savedEmail');
+        const savedPassword = await AsyncStorage.getItem('savedPassword');
+        if (savedEmail && savedPassword) {
+          setEmail(savedEmail);
+          setPassword(savedPassword);
+          setIsChecked(true);
+        }
+      } catch (error) {
+        console.error('Failed to load credentials:', error);
+      }
+    };
+  
+    loadCredentials();
+  }, []);
+  
+  const onSubmit = async () => {
+    if (!email || !password) {
+      ToastAndroid.show('Please enter email and password', ToastAndroid.SHORT);
+      return;
+    }
+  
+    if (isChecked) {
+      // Save email and password
+      try {
+        await AsyncStorage.setItem('savedEmail', email);
+        await AsyncStorage.setItem('savedPassword', password);
+      } catch (error) {
+        console.error('Failed to save credentials:', error);
+      }
+    } else {
+      // Remove saved data if unchecked
+      try {
+        await AsyncStorage.removeItem('savedEmail');
+        await AsyncStorage.removeItem('savedPassword');
+      } catch (error) {
+        console.error('Failed to remove credentials:', error);
+      }
+    }
+  
+    handleLogin(email, password);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }}>
       <View style={{ flex: 1, marginHorizontal: 22 }}>
@@ -69,11 +121,13 @@ export default function login() {
             <TextInput
               placeholder="Enter your email address"
               placeholderTextColor={Colors.black}
+              value={email}
+              onChangeText={setEmail}
               keyboardType="email-address"
+              autoCapitalize="none"
               style={{
                 width: "100%",
               }}
-              //   onChangeText={(text) => handleChange(text, "email")}
               cursorColor={Colors.primary}
             />
           </View>
@@ -109,7 +163,8 @@ export default function login() {
               style={{
                 width: "100%",
               }}
-              //   onChangeText={(text) => handleChange(text, "password")}
+              value={password}
+              onChangeText={setPassword}
               cursorColor={Colors.primary}
             />
 
@@ -144,17 +199,26 @@ export default function login() {
 
           <Text>Remember Me</Text>
         </View>
-
-        <Button
-          title="Login"
-          filled
+        <View
           style={{
-            marginTop: 18,
-            marginBottom: 4,
+            paddingTop: 10 * 6,
+            gap: 10,
           }}
-            onPress={() => router.push('/(tabs)')}
-        />
-
+        >
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={onSubmit}
+            disabled={loading}
+            activeOpacity={0.7}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Text style={styles.buttonText}>Login</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+        
         <View
           style={{
             flexDirection: "row",
@@ -185,4 +249,30 @@ export default function login() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: Colors.primary,
+    paddingVertical: 10 * 1.5,
+    paddingHorizontal: 10 * 2,
+    width: "100%",
+    borderRadius: 10,
+    shadowColor: Colors.text,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 6,
+    opacity: 0.9,
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.iconBg,
+  },
+  buttonText: {
+    color: Colors.background,
+    fontSize: 16,
+    textAlign: "center",
+    fontWeight: "bold",
+  }
+});

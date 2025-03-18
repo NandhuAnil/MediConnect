@@ -1,10 +1,12 @@
 import {
+  ActivityIndicator,
   Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -12,14 +14,38 @@ import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
-import Button from "@/components/Button";
 import { useRouter } from "expo-router";
+import useAuth from "@/hooks/Auth.services";
 
 export default function signup() {
   const router = useRouter();
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const { handleSignup, loading } = useAuth();
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const [isPasswordShown1, setIsPasswordShown1] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+
+  const onSubmit = () => {
+    if (!isChecked) {
+      ToastAndroid.show('Please accept the terms and conditions', ToastAndroid.SHORT);
+      return;
+    }
+    
+    if (!password || !confirmPassword) {
+      ToastAndroid.show('Please enter a password and confirm password', ToastAndroid.SHORT);
+      return;
+    }
+  
+    if (password !== confirmPassword) {
+      ToastAndroid.show('Passwords do not match', ToastAndroid.SHORT);
+      return;
+    }
+  
+    handleSignup(name, email, password);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }}>
@@ -78,7 +104,8 @@ export default function signup() {
               style={{
                 width: "100%",
               }}
-              //   onChangeText={(text) => handleChange(text, "name")}
+              value={name}
+              onChangeText={setName}
               cursorColor={Colors.primary}
             />
           </View>
@@ -114,7 +141,8 @@ export default function signup() {
               style={{
                 width: "100%",
               }}
-              //   onChangeText={(text) => handleChange(text, "email")}
+              value={email}
+              onChangeText={setEmail}
               autoCapitalize="none"
               cursorColor={Colors.primary}
             />
@@ -151,7 +179,8 @@ export default function signup() {
               style={{
                 width: "100%",
               }}
-              //   onChangeText={(text) => handleChange(text, "password")}
+              value={password}
+              onChangeText={setPassword}
               cursorColor={Colors.primary}
             />
 
@@ -201,7 +230,8 @@ export default function signup() {
               style={{
                 width: "100%",
               }}
-              //   onChangeText={(text) => handleChange(text, "password2")}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
               cursorColor={Colors.primary}
             />
 
@@ -237,15 +267,25 @@ export default function signup() {
           <Text>I agree to the terms and conditions</Text>
         </View>
 
-        <Button
-          title="Sign Up"
-          filled
+        <View
           style={{
-            marginTop: 18,
-            marginBottom: 4,
+            paddingTop: 10 * 6,
+            gap: 10,
           }}
-          //   onPress={() => SignUp()}
-        />
+        >
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={onSubmit}
+            disabled={loading}
+            activeOpacity={0.7}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Text style={styles.buttonText}>Sign Up</Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
         <View
           style={{
@@ -275,4 +315,30 @@ export default function signup() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: Colors.primary,
+    paddingVertical: 10 * 1.5,
+    paddingHorizontal: 10 * 2,
+    width: "100%",
+    borderRadius: 10,
+    shadowColor: Colors.text,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 6,
+    opacity: 0.9,
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.iconBg,
+  },
+  buttonText: {
+    color: Colors.background,
+    fontSize: 16,
+    textAlign: "center",
+    fontWeight: "bold",
+  }
+});

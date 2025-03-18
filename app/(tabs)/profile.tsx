@@ -10,6 +10,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { adjustColor } from "@/scripts/adjustColor";
+import useAuth from "@/hooks/Auth.services";
 
 type IconName = keyof typeof MaterialIcons.glyphMap;
 
@@ -52,6 +53,12 @@ const user = {
 
 export default function profile() {
   const userImageUrl = "";
+  const { handleLogout } = useAuth();
+
+  const onSubmit = () => {
+    handleLogout();
+  };
+  
 
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -184,7 +191,7 @@ export default function profile() {
 
         {/* Log out btn */}
         <TouchableOpacity
-          // onPress={() => setModalVisible(true)}
+          onPress={onSubmit}
           style={{ marginTop: 35 }}
         >
           <View style={styles.iconTextContainer}>

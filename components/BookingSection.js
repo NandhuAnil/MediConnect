@@ -32,7 +32,6 @@ const BookingSection = ({ doctorData }) => {
     }
     setNext7Days(nextSevenDays)
   }
-  // console.log("Next 7 days = ", next7Days)
 
 
   const getTime = () => {
@@ -56,9 +55,7 @@ const BookingSection = ({ doctorData }) => {
     }
     setTimeList(timeList)
   }
-  // console.log("timeList = ", timeList)
 
-  // send data to backend
   // const handleBookAppointement = () => {
 
   //   // Perform validation

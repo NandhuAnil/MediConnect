@@ -8,11 +8,13 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName='index'
       screenOptions={{
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.text,
         headerShown: false,
-      }}>
+      }}
+      >
       <Tabs.Screen
         name="index"
         options={{
