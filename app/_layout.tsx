@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [isReady, setIsReady] = useState(false);
+  // const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const checkToken = async () => {
@@ -15,15 +15,15 @@ export default function RootLayout() {
         const token = await AsyncStorage.getItem('token');
         setTimeout(() => {
           if (token) {
-            router.replace('/(tabs)'); // Redirect to tabs if token is present
+            router.replace('/(tabs)');
           } else {
-            router.replace('/(auth)'); // Redirect to auth if no token
+            router.replace('/(auth)');
           }
-        }, 100); // Small delay to ensure component is mounted
+        }, 100);
       } catch (error) {
         console.error('Error checking token:', error);
       } finally {
-        setIsReady(true);
+        // setIsReady(true);
         SplashScreen.hideAsync();
       }
     };
@@ -31,9 +31,9 @@ export default function RootLayout() {
     checkToken();
   }, []);
 
-  if (!isReady) {
-    return null; // Show nothing until token check completes
-  }
+  // if (!isReady) {
+  //   return null; 
+  // }
 
   return (
     <>

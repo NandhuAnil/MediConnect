@@ -2,7 +2,7 @@ import GenralDoctorList from "@/components/GenralDoctorListList";
 import { Colors } from "@/constants/Colors";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -11,7 +11,6 @@ import {
   ScrollView,
   TextInput,
   FlatList,
-  Dimensions,
   TouchableOpacity,
 } from "react-native";
 import {
@@ -86,6 +85,15 @@ const categoryList = [
   },
 ];
 
+interface DoctorData {
+  doctorName: string;
+  amountPerHour: number;
+  Specialist: string;
+  availableSlots: number;
+  rating: number;
+  image: string;
+}
+
 export default function HomeScreen() {
   const router = useRouter();
   const { currentUser } = useUser();
@@ -94,7 +102,22 @@ export default function HomeScreen() {
   const { sugarSplDoctor } = useSugarDoctorData();
   const { psycoSplDoctor } = usePsycoDoctorData();
 
-  const [searchInput, setSearchInput] = useState();
+  const [searchInput, setSearchInput] = useState("");
+  const [filteredDoctors, setFilteredDoctors] = useState<DoctorData[]>([]);
+
+  useEffect(() => {
+    if (searchInput.trim() === "") {
+      setFilteredDoctors(genralDoctorData);
+    } else {
+      const lowerSearchInput = searchInput.toLowerCase();
+      const filtered = genralDoctorData.filter((doctor: DoctorData) =>
+        doctor.doctorName.toLowerCase().includes(lowerSearchInput) ||
+        doctor.Specialist.toLowerCase().includes(lowerSearchInput)
+      );
+      setFilteredDoctors(filtered);
+    }
+  }, [searchInput, genralDoctorData]);
+
   const photoURL = "";
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -277,7 +300,7 @@ export default function HomeScreen() {
             See All
           </Text>
         </View>
-        <GenralDoctorList scrollType="vertical" doctorData={genralDoctorData} />
+        <GenralDoctorList scrollType="vertical" doctorData={filteredDoctors} />
       </View>
     </ScrollView>
   );

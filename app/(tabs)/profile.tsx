@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
@@ -19,37 +20,31 @@ const categoryList: {
   id: number;
   icon: IconName;
   title: string;
-  route: string;
 }[] = [
   {
     id: 0,
     icon: "perm-contact-calendar",
     title: "Appointement",
-    route: "/(tabs)/consult",
   },
   {
     id: 1,
     icon: "payment",
     title: "Payment",
-    route: "/(tabs)/consult",
   },
   {
     id: 2,
     icon: "folder-shared",
     title: "Tell Your Friend",
-    route: "/(tabs)/consult",
   },
   {
     id: 3,
     icon: "laptop-chromebook",
     title: "Promotions",
-    route: "/(tabs)/consult",
   },
   {
     id: 4,
     icon: "settings",
     title: "Settings",
-    route: "/(tabs)/consult",
   },
 ];
 
@@ -153,7 +148,7 @@ export default function profile() {
           data={categoryList}
           renderItem={({ item }) => (
             <TouchableOpacity
-              // onPress={router.push(item.route as `/(${string})`)}
+              onPress={() => Alert.alert("Feature Coming Soon", "This feature is currently under development. Stay tuned for updates!")}
               style={{
                 display: "flex",
                 flexDirection: "row",
