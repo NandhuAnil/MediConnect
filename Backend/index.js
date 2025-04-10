@@ -74,12 +74,19 @@ io.on("connection", (socket) => {
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("receive_message", {
         sender,
+        receiver,
         message,
         timestamp: new Date(),
       });
     }
   });
-
+  socket.on("typing", ({ sender, receiver }) => {
+    const receiverSocketId = users.get(receiver);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("typing", { sender });
+    }
+  });
+  
   // Remove disconnected users
   socket.on("disconnect", () => {
     for (let [userId, socketId] of users.entries()) {

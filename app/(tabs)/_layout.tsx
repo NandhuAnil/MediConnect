@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { Colors } from '@/constants/Colors';
-import { AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, FontAwesome5, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
 
@@ -34,9 +34,29 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="chat"
+        options={{
+          title: 'Chat',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbox-outline" size={size} color={color} />
+          ),
+          headerShown: true,
+          headerTitle: "Chat Assistant"
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="user" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="userlist"
+        options={{
+          title: 'Users',
           tabBarIcon: ({ color, size }) => (
             <AntDesign name="user" size={size} color={color} />
           ),

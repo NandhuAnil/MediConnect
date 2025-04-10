@@ -168,7 +168,9 @@ export default function HomeScreen() {
             </Text>
           </View>
         </View>
-        <Ionicons name="notifications-outline" size={28} color="black" />
+        <TouchableOpacity onPress={() => { router.push("/(tabs)/userlist")}}>
+          <Ionicons name="notifications-outline" size={28} color="black" />
+        </TouchableOpacity>
       </View>
       {/* searchBar */}
       <View style={{ marginTop: 15 }}>
